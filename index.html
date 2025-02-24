@@ -235,26 +235,40 @@ const handleClick = () => {
   }
 };
 
-// Gestisce il tap sull'oggetto 3D
+// **GESTIONE TAP IN VISUALIZZAZIONE STANDARD**
 modelViewer.addEventListener('click', () => {
   if (!isAnimating) {
     handleClick();
   }
 });
 
-// Pausa automatica quando si entra in AR
+// **GESTIONE TAP IN MODALITÀ AR**
+const handleARTap = () => {
+  console.log('Tap in modalità AR rilevato.');
+  if (!isAnimating) {
+    handleClick();
+  }
+};
+
 modelViewer.addEventListener('ar-status', (event) => {
   if (event.detail.status === 'session-started') {
     console.log('Entrato in modalità AR.');
     isInAR = true;
     modelViewer.pause();
     isAnimating = false;
-    animationState = 'initial'; // Resetta lo stato per gestire i tap in AR
+    animationState = 'initial';
+
+    // **Aggiunge il listener per il tap in AR**
+    document.body.addEventListener('touchend', handleARTap);
   } else if (event.detail.status === 'not-presenting') {
     console.log('Uscito dalla modalità AR.');
     isInAR = false;
+
+    // **Rimuove il listener quando si esce da AR**
+    document.body.removeEventListener('touchend', handleARTap);
   }
 });
+
 
 </script>
 
