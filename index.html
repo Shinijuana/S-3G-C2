@@ -162,7 +162,7 @@
   </model-viewer>
 
  <script>
-  const modelViewer = document.getElementById('sens');
+ const modelViewer = document.getElementById('sens');
 
 let animationState = 'initial'; 
 const pauseAtFrame1 = 120;
@@ -172,6 +172,9 @@ const pauseTime1 = pauseAtFrame1 / fps;
 const pauseTime2 = pauseAtFrame2 / fps;
 let isAnimating = false;
 let isInAR = false;
+
+// Cambiamo touch-action per evitare che blocchi i tap
+modelViewer.style.touchAction = 'none';
 
 // Funzione per controllare l'animazione
 const handleClick = () => {
@@ -250,6 +253,7 @@ const handleARTap = () => {
   }
 };
 
+// **DETECT ENTRATA IN AR**
 modelViewer.addEventListener('ar-status', (event) => {
   if (event.detail.status === 'session-started') {
     console.log('Entrato in modalità AR.');
@@ -257,6 +261,14 @@ modelViewer.addEventListener('ar-status', (event) => {
     modelViewer.pause();
     isAnimating = false;
     animationState = 'initial';
+
+    // **Aggiungiamo un falso tap per interagire**
+    setTimeout(() => {
+      modelViewer.interact(500, { 
+        x: { initialValue: 0.5, keyframes: [{ frames: 30, value: 0.5 }] }, 
+        y: { initialValue: 0.5, keyframes: [{ frames: 30, value: 0.5 }] }
+      });
+    }, 1000);
 
     // **Aggiunge il listener per il tap in AR**
     document.body.addEventListener('touchend', handleARTap);
