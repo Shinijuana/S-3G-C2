@@ -164,81 +164,98 @@
  <script>
   const modelViewer = document.getElementById('sens');
 
-  let animationState = 'initial'; 
-  const pauseAtFrame1 = 120;
-  const pauseAtFrame2 = 237; 
-  const fps = 24;
-  const pauseTime1 = pauseAtFrame1 / fps; 
-  const pauseTime2 = pauseAtFrame2 / fps;
-  let isAnimating = false;
-  let isInAR = false;
+let animationState = 'initial'; 
+const pauseAtFrame1 = 120;
+const pauseAtFrame2 = 237; 
+const fps = 24;
+const pauseTime1 = pauseAtFrame1 / fps; 
+const pauseTime2 = pauseAtFrame2 / fps;
+let isAnimating = false;
+let isInAR = false;
 
-  const handleClick = () => {
-    console.log(`Tap rilevato, stato corrente: ${animationState}`);
+// Funzione per controllare l'animazione
+const handleClick = () => {
+  console.log(`Tap rilevato, stato corrente: ${animationState}`);
 
-    if (animationState === 'initial') {
-      console.log('Stato: initial. Avvio animazione fino al frame 120.');
-      modelViewer.currentTime = 0; 
-      modelViewer.play();
-      isAnimating = true; 
-      animationState = 'playingTo120';
+  if (animationState === 'initial') {
+    console.log('Stato: initial. Avvio animazione fino al frame 120.');
+    modelViewer.currentTime = 0; 
+    modelViewer.play();
+    isAnimating = true; 
+    animationState = 'playingTo120';
 
-      const checkFrame = () => {
-        if (animationState === 'playingTo120' && modelViewer.currentTime >= pauseTime1) {
-          modelViewer.pause();
-          console.log('Animazione messa in pausa al frame 120.');
-          animationState = 'pausedAt120'; 
-          isAnimating = false; 
-        } else if (animationState === 'playingTo120') {
-          requestAnimationFrame(checkFrame); 
-        }
-      };
-      requestAnimationFrame(checkFrame);
+    const checkFrame = () => {
+      if (animationState === 'playingTo120' && modelViewer.currentTime >= pauseTime1) {
+        modelViewer.pause();
+        console.log('Animazione messa in pausa al frame 120.');
+        animationState = 'pausedAt120'; 
+        isAnimating = false; 
+      } else if (animationState === 'playingTo120') {
+        requestAnimationFrame(checkFrame); 
+      }
+    };
+    requestAnimationFrame(checkFrame);
 
-    } else if (animationState === 'pausedAt120') {
-      console.log('Stato: pausedAt120. Riprendo animazione fino al frame 239.');
-      modelViewer.play();
-      isAnimating = true;
-      animationState = 'playingToEnd';
+  } else if (animationState === 'pausedAt120') {
+    console.log('Stato: pausedAt120. Riprendo animazione fino al frame 239.');
+    modelViewer.play();
+    isAnimating = true;
+    animationState = 'playingToEnd';
 
-      const checkEnd = () => {
-        if (modelViewer.currentTime >= pauseTime2) {
-          modelViewer.pause();
-          console.log('Animazione finita e messa in pausa al frame 239.');
-          animationState = 'pausedAt239'; 
-          isAnimating = false; 
-        } else {
-          requestAnimationFrame(checkEnd); 
-        }
-      };
-      requestAnimationFrame(checkEnd);
+    const checkEnd = () => {
+      if (modelViewer.currentTime >= pauseTime2) {
+        modelViewer.pause();
+        console.log('Animazione finita e messa in pausa al frame 239.');
+        animationState = 'pausedAt239'; 
+        isAnimating = false; 
+      } else {
+        requestAnimationFrame(checkEnd); 
+      }
+    };
+    requestAnimationFrame(checkEnd);
 
-    } else if (animationState === 'pausedAt239') {
-      console.log('Stato: pausedAt239. Riprendo animazione dall\'inizio.');
-      modelViewer.currentTime = 0; 
-      modelViewer.play();
-      isAnimating = true;
-      animationState = 'playingTo120';
+  } else if (animationState === 'pausedAt239') {
+    console.log('Stato: pausedAt239. Riprendo animazione dall\'inizio.');
+    modelViewer.currentTime = 0; 
+    modelViewer.play();
+    isAnimating = true;
+    animationState = 'playingTo120';
 
-      const checkStart = () => {
-        if (modelViewer.currentTime >= pauseTime1) {
-          modelViewer.pause();
-          console.log('Animazione messa in pausa al frame 120.');
-          animationState = 'pausedAt120'; 
-          isAnimating = false; 
-        } else {
-          requestAnimationFrame(checkStart); 
-        }
-      };
-      requestAnimationFrame(checkStart);
-    }
-  };
+    const checkStart = () => {
+      if (modelViewer.currentTime >= pauseTime1) {
+        modelViewer.pause();
+        console.log('Animazione messa in pausa al frame 120.');
+        animationState = 'pausedAt120'; 
+        isAnimating = false; 
+      } else {
+        requestAnimationFrame(checkStart); 
+      }
+    };
+    requestAnimationFrame(checkStart);
+  }
+};
 
-  modelViewer.addEventListener('click', () => {
-    if (!isAnimating) {
-      handleClick();
-    }
-  });
+// Gestisce il tap sull'oggetto 3D
+modelViewer.addEventListener('click', () => {
+  if (!isAnimating) {
+    handleClick();
+  }
+});
+
+// Pausa automatica quando si entra in AR
+modelViewer.addEventListener('ar-status', (event) => {
+  if (event.detail.status === 'session-started') {
+    console.log('Entrato in modalità AR.');
+    isInAR = true;
+    modelViewer.pause();
+    isAnimating = false;
+    animationState = 'initial'; // Resetta lo stato per gestire i tap in AR
+  } else if (event.detail.status === 'not-presenting') {
+    console.log('Uscito dalla modalità AR.');
+    isInAR = false;
+  }
+});
+
 </script>
 
 
