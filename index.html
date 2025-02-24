@@ -143,7 +143,6 @@
     ar 
     ar-modes="webxr"
     camera-controls 
-    disable-tap gesture-detector="none"
     touch-action="pan-y" 
     alt="3G-C2 Sensor"
     >
@@ -174,7 +173,7 @@ const pauseTime2 = pauseAtFrame2 / fps;
 let isAnimating = false;
 let isInAR = false;
 
-// Funzione per gestire i tap
+// **Funzione per gestire il TAP**
 const handleClick = () => {
   console.log(`Tap rilevato, stato corrente: ${animationState}`);
 
@@ -233,22 +232,15 @@ const handleClick = () => {
   }
 };
 
-// **GESTIONE TAP IN MODALITÀ NORMALE**
-modelViewer.addEventListener('click', () => {
+// **Rileva il TAP e lo collega all'animazione**
+modelViewer.addEventListener('pointerdown', (event) => {
+  console.log('Pointer down rilevato!');
   if (!isAnimating) {
     handleClick();
   }
 });
 
-// **GESTIONE TAP IN MODALITÀ AR**
-const handleARTap = (event) => {
-  console.log('Tap in modalità AR rilevato.');
-  if (!isAnimating) {
-    handleClick();
-  }
-};
-
-// **RILEVA ENTRATA IN MODALITÀ AR**
+// **Rileva ingresso in modalità AR**
 modelViewer.addEventListener('ar-status', (event) => {
   if (event.detail.status === 'session-started') {
     console.log('Entrato in modalità AR.');
@@ -256,17 +248,12 @@ modelViewer.addEventListener('ar-status', (event) => {
     modelViewer.pause();
     isAnimating = false;
     animationState = 'initial';
-
-    // **Listener per intercettare i tap su AR**
-    modelViewer.addEventListener('ar-hit-test', handleARTap);
   } else if (event.detail.status === 'not-presenting') {
     console.log('Uscito dalla modalità AR.');
     isInAR = false;
-
-    // **Rimuove il listener quando si esce da AR**
-    modelViewer.removeEventListener('ar-hit-test', handleARTap);
   }
 });
+
 
 </script>
 
