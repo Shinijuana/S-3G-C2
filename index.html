@@ -173,7 +173,7 @@ const pauseTime2 = pauseAtFrame2 / fps;
 let isAnimating = false;
 let isInAR = false;
 
-// **Funzione per gestire il TAP**
+// **Funzione per gestire il TAP valido sul modello**
 const handleClick = () => {
   console.log(`Tap rilevato, stato corrente: ${animationState}`);
 
@@ -232,11 +232,17 @@ const handleClick = () => {
   }
 };
 
-// **Rileva il TAP e lo collega all'animazione**
+// **Rileva il TAP e verifica se ha colpito il modello**
 modelViewer.addEventListener('pointerdown', (event) => {
-  console.log('Pointer down rilevato!');
-  if (!isAnimating) {
-    handleClick();
+  const hit = modelViewer.positionAndNormalFromPoint(event.clientX, event.clientY);
+  
+  if (hit) {
+    console.log(`TAP SUL MODELLO! Posizione: ${hit.position.toString()}`);
+    if (!isAnimating) {
+      handleClick();
+    }
+  } else {
+    console.log("TAP FUORI DAL MODELLO, ignorato.");
   }
 });
 
@@ -253,7 +259,6 @@ modelViewer.addEventListener('ar-status', (event) => {
     isInAR = false;
   }
 });
-
 
 </script>
 
