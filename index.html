@@ -171,8 +171,9 @@
   const pauseTime1 = pauseAtFrame1 / fps; 
   const pauseTime2 = pauseAtFrame2 / fps;
   let isAnimating = false;
+  let isInAR = false;
 
-  const handleTap = () => {
+  const handleClick = () => {
     console.log(`Tap rilevato, stato corrente: ${animationState}`);
 
     if (animationState === 'initial') {
@@ -235,10 +236,11 @@
 
   modelViewer.addEventListener('click', () => {
     if (!isAnimating) {
-      handleTap();
+      handleClick();
     }
   });
 </script>
+
 
 </body>
 </html>
