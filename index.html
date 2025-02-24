@@ -164,43 +164,38 @@
  <script>
  const modelViewer = document.getElementById('sens');
 
-let animationState = 'initial'; 
+let animationState = 'initial';
 const pauseAtFrame1 = 120;
-const pauseAtFrame2 = 237; 
+const pauseAtFrame2 = 237;
 const fps = 24;
-const pauseTime1 = pauseAtFrame1 / fps; 
+const pauseTime1 = pauseAtFrame1 / fps;
 const pauseTime2 = pauseAtFrame2 / fps;
 let isAnimating = false;
 let isInAR = false;
 
-// Cambiamo touch-action per evitare che blocchi i tap
-modelViewer.style.touchAction = 'none';
-
-// Funzione per controllare l'animazione
+// Funzione per gestire i tap
 const handleClick = () => {
   console.log(`Tap rilevato, stato corrente: ${animationState}`);
 
   if (animationState === 'initial') {
-    console.log('Stato: initial. Avvio animazione fino al frame 120.');
-    modelViewer.currentTime = 0; 
+    modelViewer.currentTime = 0;
     modelViewer.play();
-    isAnimating = true; 
+    isAnimating = true;
     animationState = 'playingTo120';
 
     const checkFrame = () => {
-      if (animationState === 'playingTo120' && modelViewer.currentTime >= pauseTime1) {
+      if (modelViewer.currentTime >= pauseTime1) {
         modelViewer.pause();
         console.log('Animazione messa in pausa al frame 120.');
-        animationState = 'pausedAt120'; 
-        isAnimating = false; 
-      } else if (animationState === 'playingTo120') {
-        requestAnimationFrame(checkFrame); 
+        animationState = 'pausedAt120';
+        isAnimating = false;
+      } else {
+        requestAnimationFrame(checkFrame);
       }
     };
     requestAnimationFrame(checkFrame);
 
   } else if (animationState === 'pausedAt120') {
-    console.log('Stato: pausedAt120. Riprendo animazione fino al frame 239.');
     modelViewer.play();
     isAnimating = true;
     animationState = 'playingToEnd';
@@ -209,17 +204,16 @@ const handleClick = () => {
       if (modelViewer.currentTime >= pauseTime2) {
         modelViewer.pause();
         console.log('Animazione finita e messa in pausa al frame 239.');
-        animationState = 'pausedAt239'; 
-        isAnimating = false; 
+        animationState = 'pausedAt239';
+        isAnimating = false;
       } else {
-        requestAnimationFrame(checkEnd); 
+        requestAnimationFrame(checkEnd);
       }
     };
     requestAnimationFrame(checkEnd);
 
   } else if (animationState === 'pausedAt239') {
-    console.log('Stato: pausedAt239. Riprendo animazione dall\'inizio.');
-    modelViewer.currentTime = 0; 
+    modelViewer.currentTime = 0;
     modelViewer.play();
     isAnimating = true;
     animationState = 'playingTo120';
@@ -228,17 +222,17 @@ const handleClick = () => {
       if (modelViewer.currentTime >= pauseTime1) {
         modelViewer.pause();
         console.log('Animazione messa in pausa al frame 120.');
-        animationState = 'pausedAt120'; 
-        isAnimating = false; 
+        animationState = 'pausedAt120';
+        isAnimating = false;
       } else {
-        requestAnimationFrame(checkStart); 
+        requestAnimationFrame(checkStart);
       }
     };
     requestAnimationFrame(checkStart);
   }
 };
 
-// **GESTIONE TAP IN VISUALIZZAZIONE STANDARD**
+// **GESTIONE TAP IN MODALITÀ NORMALE**
 modelViewer.addEventListener('click', () => {
   if (!isAnimating) {
     handleClick();
@@ -246,14 +240,14 @@ modelViewer.addEventListener('click', () => {
 });
 
 // **GESTIONE TAP IN MODALITÀ AR**
-const handleARTap = () => {
+const handleARTap = (event) => {
   console.log('Tap in modalità AR rilevato.');
   if (!isAnimating) {
     handleClick();
   }
 };
 
-// **DETECT ENTRATA IN AR**
+// **RILEVA ENTRATA IN MODALITÀ AR**
 modelViewer.addEventListener('ar-status', (event) => {
   if (event.detail.status === 'session-started') {
     console.log('Entrato in modalità AR.');
@@ -262,25 +256,16 @@ modelViewer.addEventListener('ar-status', (event) => {
     isAnimating = false;
     animationState = 'initial';
 
-    // **Aggiungiamo un falso tap per interagire**
-    setTimeout(() => {
-      modelViewer.interact(500, { 
-        x: { initialValue: 0.5, keyframes: [{ frames: 30, value: 0.5 }] }, 
-        y: { initialValue: 0.5, keyframes: [{ frames: 30, value: 0.5 }] }
-      });
-    }, 1000);
-
-    // **Aggiunge il listener per il tap in AR**
-    document.body.addEventListener('touchend', handleARTap);
+    // **Listener per intercettare i tap su AR**
+    modelViewer.addEventListener('ar-hit-test', handleARTap);
   } else if (event.detail.status === 'not-presenting') {
     console.log('Uscito dalla modalità AR.');
     isInAR = false;
 
     // **Rimuove il listener quando si esce da AR**
-    document.body.removeEventListener('touchend', handleARTap);
+    modelViewer.removeEventListener('ar-hit-test', handleARTap);
   }
 });
-
 
 </script>
 
