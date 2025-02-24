@@ -146,10 +146,6 @@
     touch-action="pan-y" 
     alt="3G-C2 Sensor"
     >
-  
-    <button slot="animate-button" id="animate-button">
-      Explode
-    </button>
     
     <button slot="ar-button" id="ar-button">
       View in your space
@@ -164,6 +160,10 @@
     </button>
     
   </model-viewer>
+  
+   <button id="animate-button">
+    Explode
+  </button> <!-- Messo fuori dal model-viewer per visibilità -->
 
   <script>
   const modelViewer = document.getElementById('sens');
