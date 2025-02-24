@@ -158,124 +158,87 @@
     <button id="ar-failure" role="alert" aria-live="assertive">
       AR is not tracking!
     </button>
-
-  <button id="animate-button">Explode 3D-C2</button> 
+    
   </model-viewer>
 
-  <script>
-    const modelViewer = document.getElementById('sens');
-    const animateButton = document.getElementById('animate-button');
+ <script>
+  const modelViewer = document.getElementById('sens');
 
-    let animationState = 'initial'; 
-    const pauseAtFrame1 = 120;
-    const pauseAtFrame2 = 237; 
-    const fps = 24;
-    const pauseTime1 = pauseAtFrame1 / fps; 
-    const pauseTime2 = pauseAtFrame2 / fps;
-    let isAnimating = false;
-    let isInAR = false;
+  let animationState = 'initial'; 
+  const pauseAtFrame1 = 120;
+  const pauseAtFrame2 = 237; 
+  const fps = 24;
+  const pauseTime1 = pauseAtFrame1 / fps; 
+  const pauseTime2 = pauseAtFrame2 / fps;
+  let isAnimating = false;
 
-    const handleClick = () => {
-      console.log(`Click bottone rilevato, stato corrente: ${animationState}`);
+  const handleTap = () => {
+    console.log(`Tap rilevato, stato corrente: ${animationState}`);
 
-      if (animationState === 'initial') {
-        console.log('Stato: initial. Avvio animazione fino al frame 120.');
-        modelViewer.currentTime = 0; 
-        modelViewer.play();
-        isAnimating = true; 
-        animationState = 'playingTo120';
+    if (animationState === 'initial') {
+      console.log('Stato: initial. Avvio animazione fino al frame 120.');
+      modelViewer.currentTime = 0; 
+      modelViewer.play();
+      isAnimating = true; 
+      animationState = 'playingTo120';
 
-        const checkFrame = () => {
-          console.log(`Verifica frame (playingTo120): currentTime = ${modelViewer.currentTime.toFixed(2)}, pauseTime = ${pauseTime1.toFixed(2)}`);
-          modelViewer.updateFraming();
+      const checkFrame = () => {
+        if (animationState === 'playingTo120' && modelViewer.currentTime >= pauseTime1) {
+          modelViewer.pause();
+          console.log('Animazione messa in pausa al frame 120.');
+          animationState = 'pausedAt120'; 
+          isAnimating = false; 
+        } else if (animationState === 'playingTo120') {
+          requestAnimationFrame(checkFrame); 
+        }
+      };
+      requestAnimationFrame(checkFrame);
 
-          if (animationState === 'playingTo120' && modelViewer.currentTime >= pauseTime1) {
-            modelViewer.pause();
-            console.log('Animazione messa in pausa al frame 120.');
-            animationState = 'pausedAt120'; 
-            isAnimating = false; 
-          } else if (animationState === 'playingTo120') {
-            requestAnimationFrame(checkFrame); 
-          }
-        };
-        
-        requestAnimationFrame(checkFrame);
-      } else if (animationState === 'pausedAt120') {
-        console.log('Stato: pausedAt120. Riprendo animazione fino al frame 239.');
-        modelViewer.currentTime = pauseTime1;
-        modelViewer.play();
-        isAnimating = true;
+    } else if (animationState === 'pausedAt120') {
+      console.log('Stato: pausedAt120. Riprendo animazione fino al frame 239.');
+      modelViewer.play();
+      isAnimating = true;
+      animationState = 'playingToEnd';
 
-        const checkEnd = () => {
-          console.log(`Verifica fine (playingToEnd): currentTime = ${modelViewer.currentTime.toFixed(2)}, pauseTime = ${pauseTime2.toFixed(2)}`);
-          modelViewer.updateFraming();
-          
-          if (modelViewer.currentTime >= pauseTime2) {
-            modelViewer.pause();
-            console.log('Animazione finita e messa in pausa al frame 239.');
-            animationState = 'pausedAt239'; 
-            isAnimating = false; 
-          } else {
-            requestAnimationFrame(checkEnd); 
-          }
-        };
+      const checkEnd = () => {
+        if (modelViewer.currentTime >= pauseTime2) {
+          modelViewer.pause();
+          console.log('Animazione finita e messa in pausa al frame 239.');
+          animationState = 'pausedAt239'; 
+          isAnimating = false; 
+        } else {
+          requestAnimationFrame(checkEnd); 
+        }
+      };
+      requestAnimationFrame(checkEnd);
 
-        requestAnimationFrame(checkEnd);
-      } else if (animationState === 'pausedAt239') {
-        console.log('Stato: pausedAt239. Riprendo animazione dall\'inizio.');
-        modelViewer.currentTime = 0; 
-        modelViewer.play();
-        isAnimating = true;
+    } else if (animationState === 'pausedAt239') {
+      console.log('Stato: pausedAt239. Riprendo animazione dall\'inizio.');
+      modelViewer.currentTime = 0; 
+      modelViewer.play();
+      isAnimating = true;
+      animationState = 'playingTo120';
 
-        const checkStart = () => {
-          console.log(`Verifica inizio (playingTo120): currentTime = ${modelViewer.currentTime.toFixed(2)}, pauseTime = ${pauseTime1.toFixed(2)}`);
-          modelViewer.updateFraming();
-          
-          if (modelViewer.currentTime >= pauseTime1) {
-            modelViewer.pause();
-            console.log('Animazione messa in pausa al frame 120.');
-            animationState = 'pausedAt120'; 
-            isAnimating = false; 
-          } else {
-            requestAnimationFrame(checkStart); 
-          }
-        };
+      const checkStart = () => {
+        if (modelViewer.currentTime >= pauseTime1) {
+          modelViewer.pause();
+          console.log('Animazione messa in pausa al frame 120.');
+          animationState = 'pausedAt120'; 
+          isAnimating = false; 
+        } else {
+          requestAnimationFrame(checkStart); 
+        }
+      };
+      requestAnimationFrame(checkStart);
+    }
+  };
 
-        requestAnimationFrame(checkStart);
-      }
-    };
+  modelViewer.addEventListener('click', () => {
+    if (!isAnimating) {
+      handleTap();
+    }
+  });
+</script>
 
-    animateButton.addEventListener('click', () => {
-      if (!isAnimating) {
-        handleClick();
-      }
-    });
-
-    // Funzione per abbassare il modello 3D di 2.41828 metri
-    modelViewer.addEventListener('ar-status', (event) => {
-      if (event.detail.status === 'session-started') {
-        console.log('Entrato in modalità AR.');
-        isInAR = true;
-        modelViewer.pause();
-        isAnimating = false; 
-        
-        // Abbassa il modello di 2.41828 metri
-        const heightOffset = -2.41828; // Offset negativo per abbassare il modello
-        modelViewer.position.y += heightOffset; // Modifica la posizione Y
-      } else if (event.detail.status === 'not-presenting') {
-        console.log('Uscito dalla modalità AR.');
-        isInAR = false;
-      }
-    });
-
-    // Evento di fine animazione
-    modelViewer.addEventListener('finished', () => {
-      modelViewer.pause(); 
-      console.log('Animazione finita e messa in pausa (evento finished).');
-      animationState = 'pausedAt120';
-      isAnimating = false;
-    });
-
-  </script>
 </body>
 </html>
