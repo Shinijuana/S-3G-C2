@@ -5,282 +5,133 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
   <title>Sensitron AR</title>
   <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
-  <style>
-    :not(:defined) > * {
-      display: none;
-    }
-
-     html, body {
-        margin: 0;
-        padding: 0;
-        width: 100%;
-        height: 100%;
-        overflow: hidden;
-      }
-    
-    model-viewer {
-      background-color: #fff;
-      overflow-x: hidden;
-      width: 100%;
-      height: 100vh;
-      object-fit: cover
-    }
-
-    #ar-button {
-      background-image: url(assets/ic_view_in_ar_new_googblue_48dp.png);
-      background-repeat: no-repeat;
-      background-size: 20px 20px;
-      background-position: 12px 50%;
-      background-color: #00d5ca;
-      position: absolute;
-      left: 50%;
-      transform: translateX(-50%);
-      white-space: nowrap;
-      bottom: 132px;
-      padding: 0px 16px 0px 40px;
-      font-family: Roboto Regular, Helvetica Neue, sans-serif;
-      font-size: 14px;
-      color: #0076E7;
-      height: 36px;
-      line-height: 36px;
-      border-radius: 5px;
-      border: 1px solid #DADCE0;
-    }
-
-    #ar-button:active {
-      background-color: #E8EAED;
-    }
-
-    #ar-button:focus {
-      outline: none;
-    }
-
-    #ar-button:focus-visible {
-      outline: 1px solid #4285f4;
-    }
-
-    @keyframes circle {
-      from {
-        transform: translateX(-50%) rotate(0deg) translateX(50px) rotate(0deg);
-      }
-      to {
-        transform: translateX(-50%) rotate(360deg) translateX(50px) rotate(-360deg);
-      }
-    }
-
-    @keyframes elongate {
-      from {
-        transform: translateX(100px);
-      }
-      to {
-        transform: translateX(-100px);
-      }
-    }
-
-    model-viewer > #ar-prompt {
-      position: absolute;
-      left: 50%;
-      bottom: 175px;
-      animation: elongate 2s infinite ease-in-out alternate;
-      display: none;
-    }
-
-    model-viewer[ar-status="session-started"] > #ar-prompt {
-      display: block;
-    }
-
-    model-viewer > #ar-prompt > img {
-      animation: circle 4s linear infinite;
-    }
-
-    model-viewer > #ar-failure {
-      position: absolute;
-      left: 50%;
-      transform: translateX(-50%);
-      bottom: 175px;
-      display: none;
-    }
-
-    model-viewer[ar-tracking="not-tracking"] > #ar-failure {
-      display: block;
-    }
-
-    #animate-button {
-      background-image: url(assets/esploso.png);
-      background-repeat: no-repeat;
-      background-size: 20px 20px;
-      background-position: 12px 50%;
-      background-color: #0076E7;
-      position: absolute;
-      left: 50%;
-      transform: translateX(-50%);
-      white-space: nowrap;
-      bottom: 80px;
-      padding: 0px 16px 0px 40px;
-      font-family: Roboto Regular, Helvetica Neue, sans-serif;
-      font-size: 14px;
-      color: #fff;
-      height: 36px;
-      line-height: 36px;
-      border-radius: 5px;
-      border: 1px solid #DADCE0;
-    }
-
-    #animate-button:active {
-      background-color: #00d5ca;
-    }
-    
-  </style>
+  <link rel="stylesheet" href="main.css">
 </head>
 <body>
-
-  <model-viewer 
-    id="sens"
-    src="full.glb" 
-    poster="assets/sensitron.jpg"
-    tone-mapping="neutral" 
-    shadow-intensity="1" 
-    ar 
-    ar-modes="webxr"
-    camera-controls 
-    touch-action="pan-y" 
-    alt="3G-C2 Sensor"
-    >
-    
-    <button slot="ar-button" id="ar-button">
-      View in your space
-    </button>
-
-    <div id="ar-prompt">
-      <img src="assets/hand.png" alt="Hand gesture to interact with AR">
-    </div>
-
-    <button id="ar-failure" role="alert" aria-live="assertive">
-      AR is not tracking!
-    </button>
-
-    <button id="animate-button">
-    Explode
-  </button> <!-- Messo fuori dal model-viewer per visibilità -->
-    
-  </model-viewer>
   
-   
+<model-viewer src="model.glb" id="avatar" ar ar-modes="webxr scene-viewer quick-look" camera-controls tone-mapping="neutral" poster="poster.webp" shadow-intensity="1">
+  <button class="Hotspot" id="hotspot-2" slot="hotspot-2" data-surface="1 0 0 3 2 0.490 0.501 0.009" data-visibility-attribute="visible"></button>
+  <button class="Hotspot" id="hotspot-3" slot="hotspot-3" data-surface="3 0 53 64 62 0.482 0.161 0.357" data-visibility-attribute="visible"></button>
+  <button class="Hotspot" id="hotspot-4" slot="hotspot-4" data-surface="4 0 426 418 69 0.211 0.063 0.726" data-visibility-attribute="visible"></button>
+  <button class="Hotspot" id="hotspot-5" slot="hotspot-5" data-surface="2 0 14 13 9 0.481 0.020 0.500" data-visibility-attribute="visible"></button>
+  <button class="Hotspot" id="hotspot-6" slot="hotspot-6" data-surface="0 0 66482 66483 66484 0.685 0.250 0.065" data-visibility-attribute="visible"></button>
+  <div class="progress-bar hide" slot="progress-bar">
+    <div class="update-bar"></div>
+  </div>
+  <button slot="ar-button" id="ar-button">View in your space</button>
+  <div id="ar-prompt">
+    <img src="https://modelviewer.dev/shared-assets/icons/hand.png">
+  </div>
+</model-viewer>
 
-  <script>
-  const modelViewer = document.getElementById('sens');
-  const animateButton = document.getElementById('animate-button'); // Correzione qui per ottenere il pulsante
+<script>
+const modelViewer = document.getElementById('avatar');  // ID corretto per il modello
+const hotspot = document.getElementById('hotspot-6');   // Hotspot che avvia l'animazione
 
-  let animationState = 'initial'; 
-  const pauseAtFrame1 = 120;
-  const pauseAtFrame2 = 237; 
-  const fps = 24;
-  const pauseTime1 = pauseAtFrame1 / fps; 
-  const pauseTime2 = pauseAtFrame2 / fps;
-  let isAnimating = false;
-  let isInAR = false;
+let animationState = 'initial';
+const pauseAtFrame1 = 30;  // Pausa al frame 30
+const pauseAtFrame2 = 59;  // Pausa al frame 60
+const fps = 24;
+const pauseTime1 = pauseAtFrame1 / fps; 
+const pauseTime2 = pauseAtFrame2 / fps;
+let isAnimating = false;
 
-  const handleClick = () => {
-    console.log(`Click bottone rilevato, stato corrente: ${animationState}`);
+const handleHotspotTap = () => {
+  console.log(`Tap hotspot rilevato, stato corrente: ${animationState}`);
 
-    if (animationState === 'initial') {
-      console.log('Stato: initial. Avvio animazione fino al frame 120.');
-      modelViewer.currentTime = 0; 
-      modelViewer.play();
-      isAnimating = true; 
-      animationState = 'playingTo120';
+  if (animationState === 'initial') {
+    console.log('Stato: initial. Avvio animazione fino al frame 30.');
+    modelViewer.currentTime = 0;
+    modelViewer.play();
+    isAnimating = true;
+    animationState = 'playingTo30';
 
-      const checkFrame = () => {
-        console.log(`Verifica frame (playingTo120): currentTime = ${modelViewer.currentTime.toFixed(2)}, pauseTime = ${pauseTime1.toFixed(2)}`);
-        modelViewer.updateFraming();
+    const checkFrame = () => {
+      console.log(`Verifica frame (playingTo30): currentTime = ${modelViewer.currentTime.toFixed(2)}, pauseTime = ${pauseTime1.toFixed(2)}`);
+      modelViewer.updateFraming();
 
-        if (animationState === 'playingTo120' && modelViewer.currentTime >= pauseTime1) {
-          modelViewer.pause();
-          console.log('Animazione messa in pausa al frame 120.');
-          animationState = 'pausedAt120'; 
-          isAnimating = false; 
-        } else if (animationState === 'playingTo120') {
-          requestAnimationFrame(checkFrame); 
-        }
-      };
-      
-      requestAnimationFrame(checkFrame);
-    } else if (animationState === 'pausedAt120') {
-      console.log('Stato: pausedAt120. Riprendo animazione fino al frame 239.');
-      modelViewer.currentTime = pauseTime1;
-      modelViewer.play();
-      isAnimating = true;
+      if (animationState === 'playingTo30' && modelViewer.currentTime >= pauseTime1) {
+        modelViewer.pause();
+        console.log('Animazione messa in pausa al frame 30.');
+        animationState = 'pausedAt30';
+        isAnimating = false;
+      } else if (animationState === 'playingTo30') {
+        requestAnimationFrame(checkFrame);
+      }
+    };
 
-      const checkEnd = () => {
-        console.log(`Verifica fine (playingToEnd): currentTime = ${modelViewer.currentTime.toFixed(2)}, pauseTime = ${pauseTime2.toFixed(2)}`);
-        modelViewer.updateFraming();
-        
-        if (modelViewer.currentTime >= pauseTime2) {
-          modelViewer.pause();
-          console.log('Animazione finita e messa in pausa al frame 239.');
-          animationState = 'pausedAt239'; 
-          isAnimating = false; 
-        } else {
-          requestAnimationFrame(checkEnd); 
-        }
-      };
+    requestAnimationFrame(checkFrame);
+  } else if (animationState === 'pausedAt30') {
+    console.log('Stato: pausedAt30. Riprendo animazione fino al frame 60.');
+    modelViewer.currentTime = pauseTime1;
+    modelViewer.play();
+    isAnimating = true;
 
-      requestAnimationFrame(checkEnd);
-    } else if (animationState === 'pausedAt239') {
-      console.log('Stato: pausedAt239. Riprendo animazione dall\'inizio.');
-      modelViewer.currentTime = 0; 
-      modelViewer.play();
-      isAnimating = true;
+    const checkEnd = () => {
+      console.log(`Verifica fine (playingToEnd): currentTime = ${modelViewer.currentTime.toFixed(2)}, pauseTime = ${pauseTime2.toFixed(2)}`);
+      modelViewer.updateFraming();
 
-      const checkStart = () => {
-        console.log(`Verifica inizio (playingTo120): currentTime = ${modelViewer.currentTime.toFixed(2)}, pauseTime = ${pauseTime1.toFixed(2)}`);
-        modelViewer.updateFraming();
-        
-        if (modelViewer.currentTime >= pauseTime1) {
-          modelViewer.pause();
-          console.log('Animazione messa in pausa al frame 120.');
-          animationState = 'pausedAt120'; 
-          isAnimating = false; 
-        } else {
-          requestAnimationFrame(checkStart); 
-        }
-      };
+      if (modelViewer.currentTime >= pauseTime2) {
+        modelViewer.pause();
+        console.log('Animazione messa in pausa al frame 60.');
+        animationState = 'pausedAt60';
+        isAnimating = false;
+      } else {
+        requestAnimationFrame(checkEnd);
+      }
+    };
 
-      requestAnimationFrame(checkStart);
-    }
-  };
+    requestAnimationFrame(checkEnd);
+  } else if (animationState === 'pausedAt60') {
+    console.log('Stato: pausedAt60. Riprendo animazione dall\'inizio.');
+    modelViewer.currentTime = 0;
+    modelViewer.play();
+    isAnimating = true;
+    animationState = 'playingFromStart';
 
-  animateButton.addEventListener('click', () => {
-    if (!isAnimating) {
-      handleClick();
-    }
-  });
+    const checkStart = () => {
+      console.log(`Verifica inizio (playingFromStart): currentTime = ${modelViewer.currentTime.toFixed(2)}, pauseTime = ${pauseTime1.toFixed(2)}`);
+      modelViewer.updateFraming();
 
-  // Funzione per abbassare il modello 3D di 2.41828 metri
-  modelViewer.addEventListener('ar-status', (event) => {
-    if (event.detail.status === 'session-started') {
-      console.log('Entrato in modalità AR.');
-      isInAR = true;
-      modelViewer.pause();
-      isAnimating = false; 
-      
-      // Abbassa il modello di 2.41828 metri
-      const heightOffset = -2.41828; // Offset negativo per abbassare il modello
-      modelViewer.position.y += heightOffset; // Modifica la posizione Y
-    } else if (event.detail.status === 'not-presenting') {
-      console.log('Uscito dalla modalità AR.');
-      isInAR = false;
-    }
-  });
+      if (modelViewer.currentTime >= pauseTime1) {
+        modelViewer.pause();
+        console.log('Animazione messa in pausa al frame 30.');
+        animationState = 'pausedAt30';
+        isAnimating = false;
+      } else {
+        requestAnimationFrame(checkStart);
+      }
+    };
 
-  // Evento di fine animazione
-  modelViewer.addEventListener('finished', () => {
-    modelViewer.pause(); 
-    console.log('Animazione finita e messa in pausa (evento finished).');
-    animationState = 'pausedAt120';
+    requestAnimationFrame(checkStart);
+  }
+};
+
+// Ascolta il tap sull'hotspot per avviare l'animazione
+hotspot.addEventListener('click', () => {
+  if (!isAnimating) {
+    handleHotspotTap();
+  }
+});
+
+// Funzione per abbassare il modello 3D di 2.41828 metri
+modelViewer.addEventListener('ar-status', (event) => {
+  if (event.detail.status === 'session-started') {
+    console.log('Entrato in modalità AR.');
+    modelViewer.pause();
     isAnimating = false;
-  });
+  } else if (event.detail.status === 'not-presenting') {
+    console.log('Uscito dalla modalità AR.');
+  }
+});
 
+// Evento di fine animazione
+modelViewer.addEventListener('finished', () => {
+  modelViewer.pause();
+  console.log('Animazione finita e messa in pausa (evento finished).');
+  animationState = 'pausedAt60';  // Pausa finale al frame 60
+  isAnimating = false;
+});
 </script>
 
 </body>
